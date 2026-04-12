@@ -1,13 +1,8 @@
-sealed interface Token {}
-
-record JsonString(String value) implements Token {}
-record JsonNumber(String value) implements Token {}
-record JsonBoolean(boolean value) implements Token {}
-record JsonNull() implements Token {}
-
-record OpenBrace() implements Token {}
-record CloseBrace() implements Token {}
-record OpenBracket() implements Token {}
-record CloseBracket() implements Token {}
-record Comma() implements Token {}
-record Colon() implements Token {}
+public record Token(TokenType type, String value) {
+    public static final Token OPEN_BRACE = new Token(TokenType.OPEN_BRACE, "{");
+    public static final Token CLOSE_BRACE = new Token(TokenType.CLOSE_BRACE, "}");
+    public static final Token OPEN_BRACKET = new Token(TokenType.OPEN_BRACKET, "[");
+    public static final Token CLOSE_BRACKET = new Token(TokenType.CLOSE_BRACKET, "]");
+    public static final Token COMMA = new Token(TokenType.COMMA, ",");
+    public static final Token COLON = new Token(TokenType.COLON, ":");
+}
