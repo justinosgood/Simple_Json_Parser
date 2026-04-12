@@ -1,0 +1,12 @@
+{
+  "data_id": 33,
+  "creeper": {
+    "drop_item": "minecraft:gunpowder",
+    "count": 34,
+    "count_2": -6754,
+    "count_3": 1e-3,
+    "count_3_5": 23e+5,
+    "counter_4": 2,
+    "array": ["a", "b", "c"]
+  }
+}
