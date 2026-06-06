@@ -1,4 +1,4 @@
-package com.justin.simplejson;
+package com.justin.simplejson.util;
 
 import java.util.Iterator;
 

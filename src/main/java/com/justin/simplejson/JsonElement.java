@@ -1,37 +1,48 @@
 package com.justin.simplejson;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+public sealed interface JsonElement permits
+        JsonObject, JsonArray, JsonString, JsonNumber, JsonBoolean, JsonNull {
 
-public interface JsonElement {
-    final class JsonObject implements JsonType.JsonElement {
-        private final Map<String, JsonType.JsonElement> members = new HashMap<>();
-
-        void put(String key, JsonType.JsonElement value) { members.put(key, value);}
-
-        @Override
-        public String toString() {
-            return members.toString();
-        }
+    // access methods to navigate JSON tree
+    default JsonElement get(String key) {
+        if (this instanceof JsonObject jsonObject) return jsonObject.members.get(key);
+        throw new IllegalStateException(this.getClass() + " is not a JsonObject!");
     }
 
-    final class JsonArray implements JsonType.JsonElement {
-        private final List<JsonType.JsonElement> elements = new ArrayList<>();
-
-        void add(JsonType.JsonElement value) { elements.add(value); }
-
-        @Override
-        public String toString() {
-            return elements.toString();
-        }
+    default JsonElement get(int index) {
+        if (this instanceof JsonArray jsonArray) return jsonArray.elements.get(index);
+        throw new IllegalStateException(this.getClass() + " is not a JsonArray!");
     }
 
-    // JSON primitives
-    record JsonString(String value)                      implements JsonType.JsonElement {}
-    record JsonNumber(Number value)                      implements JsonType.JsonElement {}
-    record JsonBoolean(boolean value)                    implements JsonType.JsonElement {}
 
-    enum JsonNull implements JsonType.JsonElement { NULL }
+    // terminal operations to convert values
+    default String asString() {
+        if (this instanceof JsonString(String string)) return string;
+        throw new IllegalStateException(this.getClass() + " cannot be cast to String!");
+    }
+
+    default boolean asBoolean() {
+        if (this instanceof JsonBoolean(boolean bool)) return bool;
+        throw new IllegalStateException(this.getClass() + " cannot be cast to Boolean!");
+    }
+
+    default long asLong() {
+        if (asNumber() instanceof Long l) return l;
+        throw new IllegalStateException(this.getClass() + " cannot be cast to Long!");
+    }
+
+    default double asDouble() {
+        if (asNumber() instanceof Double d) return d;
+        throw new IllegalStateException(this.getClass() + " cannot be cast to Double!");
+    }
+
+    private Number asNumber() {
+        if (this instanceof JsonNumber(Number number)) return number;
+        throw new IllegalStateException(this.getClass() + " is not a Number!");
+    }
+
+
+    default boolean isNull() {
+        return this instanceof JsonNull;
+    }
 }

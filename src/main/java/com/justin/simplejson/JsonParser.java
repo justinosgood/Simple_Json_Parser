@@ -1,17 +1,23 @@
 package com.justin.simplejson;
 
+import com.justin.simplejson.util.ListIterator;
+
 import java.util.List;
 
-final class Parser {
+final class JsonParser {
     private final ListIterator<Token> listIterator;
 
 
-    Parser(List<Token> tokens) {
+    JsonParser(List<Token> tokens) {
         listIterator = new ListIterator<>(tokens);
     }
 
 
-    JsonType.JsonElement parseNextElement() {
+    JsonElement parse() {
+        return parseNextElement();
+    }
+
+    private JsonElement parseNextElement() {
         return switch (listIterator.next()) {
             case Token.Punctuator.START_OBJ ->
                     parseNextObject();
@@ -20,16 +26,16 @@ final class Parser {
                     parseNextArray();
 
             case Token.StringToken(String value) ->
-                    new JsonType.JsonString(value);
+                    new JsonString(value);
 
             case Token.NumberToken(String raw) ->
                     parseNextNumber(raw);
 
             case Token.BooleanToken(boolean value) ->
-                    new JsonType.JsonBoolean(value);
+                    new JsonBoolean(value);
 
             case Token.Null.NULL ->
-                    null;
+                    JsonNull.NULL;
 
 //            case Token.Punctuator.END_OBJ -> null;
 //            case Token.Punctuator.END_ARR -> null;
@@ -40,30 +46,30 @@ final class Parser {
         };
     }
 
-    private JsonType.JsonObject parseNextObject() {
-        JsonType.JsonObject jsonObject = new JsonType.JsonObject();
+    private JsonObject parseNextObject() {
+        JsonObject jsonObject = new JsonObject();
 
         Token token;
         while ((token = listIterator.next()) != Token.Punctuator.END_OBJ) {
             if (token == Token.Punctuator.COMMA) token = listIterator.next();
 
-            // parse string key
+            // parse value key
             String key = ((Token.StringToken) token).value();
 
             // skip COLON
             listIterator.next();
 
             // recursively parse value
-            JsonType.JsonElement value = parseNextElement();
+            JsonElement value = parseNextElement();
 
-            jsonObject.put(key, value);
+            jsonObject.members.put(key, value);
         }
 
         return jsonObject;
     }
 
-    private JsonType.JsonArray parseNextArray() {
-        JsonType.JsonArray jsonArray = new JsonType.JsonArray();
+    private JsonArray parseNextArray() {
+        JsonArray jsonArray = new JsonArray();
 
         Token token = listIterator.peek();
 
@@ -73,7 +79,7 @@ final class Parser {
         }
 
         do {
-            jsonArray.add(parseNextElement());
+            jsonArray.elements.add(parseNextElement());
         } while (listIterator.consumeIfEquals(Token.Punctuator.COMMA));
 
         // skip END_ARR
@@ -82,9 +88,14 @@ final class Parser {
         return jsonArray;
     }
 
-    // todo: complete implementation
-    private JsonType.JsonNumber parseNextNumber(String raw) {
-        long l = Long.parseLong(raw);
-        return new JsonType.JsonNumber(l);
+    // todo: does not account for E or e numbers
+    private JsonNumber parseNextNumber(String raw) {
+        Number number;
+        if (raw.contains(".")) {
+            number = Double.parseDouble(raw);
+        } else {
+            number = Long.parseLong(raw);
+        }
+        return new JsonNumber(number);
     }
 }

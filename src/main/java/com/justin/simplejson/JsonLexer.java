@@ -1,5 +1,7 @@
 package com.justin.simplejson;
 
+import com.justin.simplejson.util.StringIterator;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -7,14 +9,14 @@ import java.util.Set;
 import static com.justin.simplejson.Token.*;
 import static com.justin.simplejson.Token.Punctuator.*;
 
-class Lexer {
+class JsonLexer {
     // chars that make up a number in JSON
     private static final Set<Character> NUMBER_CHARS = Set.of('-', '+', 'e', 'E', '.');
 
     private final StringIterator stringIterator;
 
 
-    Lexer(String jsonString) {
+    JsonLexer(String jsonString) {
         stringIterator = new StringIterator(jsonString);
     }
 

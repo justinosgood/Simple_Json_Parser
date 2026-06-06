@@ -1,4 +1,4 @@
-package com.justin.simplejson;
+package com.justin.simplejson.util;
 
 import java.util.Iterator;
 import java.util.List;
@@ -34,7 +34,7 @@ public class ListIterator<T> implements Iterator<T> {
     }
 
     // consume next value if it equals `expected` and return `true`, otherwise return `false`
-    boolean consumeIfEquals(T expected) {
+    public boolean consumeIfEquals(T expected) {
         if (peek() == expected) {
             next();
             return true;

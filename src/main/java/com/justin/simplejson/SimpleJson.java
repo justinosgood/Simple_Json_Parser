@@ -7,16 +7,21 @@ import java.io.IOException;
 import java.util.List;
 
 public class SimpleJson {
-    public static JsonType.JsonObject fromJson(File jsonFile) {
-        List<Token> tokens = new Lexer( fileToString(jsonFile) ).tokenize();
-        //System.out.println(tokens);
-        Parser parser = new Parser(tokens);
-        //System.out.println(parser.parseNextElement());
-
-        return (JsonType.JsonObject) parser.parseNextElement();
+    public static JsonElement fromJson(File jsonFile) {
+        return fromJson(fileToString(jsonFile));
     }
 
-    private static String fileToString(File jsonFile) {
+    public static JsonElement fromJson(String jsonString) {
+        JsonLexer jsonLexer = new JsonLexer(removeWhitespace(jsonString));
+        return fromJson(jsonLexer.tokenize());
+    }
+
+    static JsonElement fromJson(List<Token> tokens) {
+        JsonParser jsonParser = new JsonParser(tokens);
+        return jsonParser.parse();
+    }
+
+    public static String fileToString(File jsonFile) {
         StringBuilder json = new StringBuilder();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(jsonFile))) {
@@ -30,7 +35,7 @@ public class SimpleJson {
         return json.toString();
     }
 
-    private static String removeWhitespace(String line) {
+    public static String removeWhitespace(String line) {
         char[] lineCharArray = line.toCharArray();
         StringBuilder newLine = new StringBuilder();
         for (char c : lineCharArray) {

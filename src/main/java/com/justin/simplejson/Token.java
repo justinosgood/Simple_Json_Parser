@@ -1,6 +1,6 @@
 package com.justin.simplejson;
 
-public sealed interface Token permits Token.Punctuator, Token.Null, Token.StringToken, Token.NumberToken, Token.BooleanToken {
+sealed interface Token permits Token.Punctuator, Token.Null, Token.StringToken, Token.NumberToken, Token.BooleanToken {
     record StringToken(String  value)  implements Token {}
     record NumberToken(String  raw)    implements Token {}
     record BooleanToken(boolean value) implements Token {}
